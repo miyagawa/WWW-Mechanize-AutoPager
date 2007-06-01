@@ -1,0 +1,18 @@
+abstract: Automatic Pagination using AutoPagerize
+author: Tatsuhiko Miyagawa <miyagawa@bulknews.net>
+build_requires: 
+  Test::More: 0
+distribution_type: module
+generated_by: Module::Install version 0.64
+license: perl
+name: WWW-Mechanize-AutoPager
+no_index: 
+  directory: 
+    - inc
+    - t
+requires: 
+  HTML::AutoPagerize: 0
+  WWW::Mechanize: 0
+  WWW::Mechanize::DecodedContent: 0
+  perl: 5.8.1
+version: 0.01
