@@ -7,6 +7,7 @@ our $VERSION = '0.01';
 use HTML::AutoPagerize;
 use Scalar::Util qw( weaken );
 use WWW::Mechanize::DecodedContent;
+use JSON;
 
 sub WWW::Mechanize::autopager {
     my $mech = shift;
@@ -36,14 +37,20 @@ sub new {
 
 sub load_siteinfo {
     my $self = shift;
-    my $url  = shift || "http://swdyh.infogami.com/autopagerize";
+    my $url  = shift || "http://wedata.net/databases/AutoPagerize/items.json";
 
-    $self->{mech}->get($url);
+    my $res = $self->{mech}->get($url);
 
-    if (my $html = $self->{mech}->content) {
-        while ($html =~ m!<textarea class="autopagerize_data".*?>\s*(.*?)\s*</textarea>!gs) {
-            my $site = $self->parse_siteinfo($1);
-            $self->{autopager}->add_site(%$site);
+    if (my $content = $self->{mech}->content) {
+        if ($res->content_type =~ m{text/html}) { # backward compatibility
+            while ($content =~ m!<textarea class="autopagerize_data".*?>\s*(.*?)\s*</textarea>!gs) {
+                my $site = $self->parse_siteinfo($1);
+                $self->{autopager}->add_site(%$site);
+            }
+        } else {
+            for my $row ( @{ from_json( $content ) } ) {
+                $self->{autopager}->add_site(%{ $row->{data} });
+            }
         }
     }
 }
